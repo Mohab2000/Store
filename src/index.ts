@@ -1,1 +1,2 @@
-console.log("Test");
+console.log('hello world');
+let number;
