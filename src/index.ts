@@ -2,6 +2,7 @@ import express, { Application, Request, Response } from 'express';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import errorMiddleware from './middleware/error.middleware';
 const PORT = 3000;
 const app: Application = express();
 
@@ -31,8 +32,17 @@ app.post('/', (req: Request, res: Response) => {
 });
 
 app.get('/', (req: Request, res: Response) => {
+  throw new Error('Error exist');
   res.json({
     message: 'Hello',
+  });
+});
+
+app.use(errorMiddleware);
+
+app.use((req: Request, res: Response) => {
+  res.status(404).json({
+    message: 'URL does not exist',
   });
 });
 
