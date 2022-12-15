@@ -1,22 +1,20 @@
 import express, { Application, Request, Response } from 'express';
-import morgan from 'morgan';
-import helmet from 'helmet';
+// import morgan from 'morgan';
+// import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import routes from './routes';
 import errorMiddleware from './middleware/error.middleware';
 import config from './config';
-import db from './database/index';
+
 const PORT = config.port || 3000;
 const app: Application = express();
-
 //console.log(config);
-
 //HTTP request logger middleware
-app.use(morgan('common'));
+// app.use(morgan('common'));
 //middleware to parse incoming requests
 app.use(express.json());
 //HTTP security middleware
-app.use(helmet());
-
+// app.use(helmet());
 //To avoid spam
 app.use(
   rateLimit({
@@ -27,35 +25,14 @@ app.use(
     message: 'Too many requests from this IP , please try again after an hour.',
   })
 );
-//Post request
-app.post('/', (req: Request, res: Response) => {
-  res.json({
-    message: 'Hello from post',
-    data: req.body,
-  });
-});
 
-//test db
-// db.connect().then((client) => {
-//   return client
-//     .query('SELECT NOW()')
-//     .then((res) => {
-//       client.release();
-//       console.log(res.rows);
-//     })
-//     .catch((err) => {
-//       client.release();
-//       console.log(err.stack);
-//     });
-// });
+app.use('/api', routes);
 
 app.get('/', (req: Request, res: Response) => {
-  // throw new Error('Error exist');
   res.json({
-    message: 'Hello',
+    message: 'Hello World',
   });
 });
-
 app.use(errorMiddleware);
 
 app.use((req: Request, res: Response) => {
