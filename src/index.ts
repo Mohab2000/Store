@@ -3,8 +3,12 @@ import morgan from 'morgan';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import errorMiddleware from './middleware/error.middleware';
-const PORT = 3000;
+import config from './config';
+import db from './database/index';
+const PORT = config.port || 3000;
 const app: Application = express();
+
+//console.log(config);
 
 //HTTP request logger middleware
 app.use(morgan('common'));
@@ -29,6 +33,20 @@ app.post('/', (req: Request, res: Response) => {
     message: 'Hello from post',
     data: req.body,
   });
+});
+
+//test db
+db.connect().then((client) => {
+  return client
+    .query('SELECT NOW()')
+    .then((res) => {
+      client.release();
+      console.log(res.rows);
+    })
+    .catch((err) => {
+      client.release();
+      console.log(err.stack);
+    });
 });
 
 app.get('/', (req: Request, res: Response) => {
